@@ -1,0 +1,82 @@
+
+
+DB_FILE="students.txt"
+
+insert_student() {
+    echo "Enter Student ID:"
+    read id
+    echo "Enter Student Name:"
+    read name
+    echo "Enter Student Grade:"
+    read grade
+
+   
+    echo "$id, $name, $grade" >> "$DB_FILE"
+    echo "Student record added successfully!"
+}
+
+delete_student() {
+    echo "Enter Student ID to delete:"
+    read id
+
+    # Check if the ID exists and delete the line containing that ID
+    if grep -q "^$id, " "$DB_FILE"; then
+        grep -v "^$id, " "$DB_FILE" > temp.txt && mv temp.txt "$DB_FILE"
+        echo "Student record with ID $id deleted successfully!"
+    else
+        echo "Student ID not found."
+    fi
+}
+
+update_student() {
+    echo "Enter Student ID to update:"
+    read id
+
+    # Check if the ID exists
+    if grep -q "^$id, " "$DB_FILE"; then
+        echo "Enter New Name:"
+        read new_name
+        echo "Enter New Grade:"
+        read new_grade
+
+               grep -v "^$id, " "$DB_FILE" > temp.txt
+        echo "$id, $new_name, $new_grade" >> temp.txt
+        mv temp.txt "$DB_FILE"
+
+        echo "Student record updated successfully!"
+    else
+        echo "Student ID not found."
+    fi
+}
+
+search_student() {
+    echo "Enter Student ID to search:"
+    read id
+
+    # Search and display the record if found
+    if grep -q "^$id, " "$DB_FILE"; then
+        grep "^$id, " "$DB_FILE"
+    else
+        echo "Student ID not found."
+    fi
+}
+
+while true; do
+    echo "Student Database Management"
+    echo "1. Insert"
+    echo "2. Delete"
+    echo "3. Update"
+    echo "4. Search"
+    echo "5. Exit"
+    echo "Choose an option:"
+    read choice
+
+    case $choice in
+        1) insert_student ;;
+        2) delete_student ;;
+        3) update_student ;;
+        4) search_student ;;
+        5) echo "Exiting..."; break ;;
+        *) echo "Invalid option, please choose again." ;;
+    esac
+done

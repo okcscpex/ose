@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+int searchOptimal(int key, int frame[], int nf) {
+    for (int i = 0; i < nf; i++) {
+        if (frame[i] == key) return 1;
+    }
+    return 0;
+}
+
+int predict(int pages[], int frame[], int np, int nf, int index) {
+    int farthest = index, res = -1;
+    for (int i = 0; i < nf; i++) {
+        int j;
+        for (j = index; j < np; j++) {
+            if (frame[i] == pages[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    res = i;
+                }
+                break;
+            }
+        }
+        if (j == np) return i;
+    }
+    return (res == -1) ? 0 : res;
+}
+
+void optimal(int pages[], int np, int nf) {
+    int frame[nf], pageFaults = 0;
+    for (int i = 0; i < nf; i++) frame[i] = -1;
+
+    for (int i = 0; i < np; i++) {
+        if (!searchOptimal(pages[i], frame, nf)) {
+            if (i < nf) {
+                frame[i] = pages[i];
+            } else {
+                int pos = predict(pages, frame, np, nf, i + 1);
+                frame[pos] = pages[i];
+            }
+            pageFaults++;
+        }
+        printf("Frame status: ");
+        for (int j = 0; j < nf; j++) printf("%d ", frame[j]);
+        printf("\n");
+    }
+    printf("Total Page Faults (Optimal): %d\n", pageFaults);
+}
+
+int main() {
+    int np, nf;
+    printf("Enter the number of pages: ");
+    scanf("%d", &np);
+    int pages[np];
+    printf("Enter the reference string: ");
+    for (int i = 0; i < np; i++) scanf("%d", &pages[i]);
+
+    printf("Enter the number of frames: ");
+    scanf("%d", &nf);
+
+    optimal(pages, np, nf);
+    return 0;
+}
+
+

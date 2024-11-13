@@ -1,0 +1,88 @@
+#include <stdio.h>
+
+int searchLRU(int key, int frame[], int nf) {
+    for (int i = 0; i < nf; i++) {
+        if (frame[i] == key) return 1;
+    }
+    return 0;
+}
+
+int findLRU(int time[], int nf) {
+    int min = time[0], pos = 0;
+    for (int i = 1; i < nf; i++) {
+        if (time[i] < min) {
+            min = time[i];
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+void LRU(int pages[], int np, int nf) {
+    int frame[nf], time[nf], pageFaults = 0;
+    
+    // Initialize frames and time tracking array
+    for (int i = 0; i < nf; i++) frame[i] = -1;
+
+    for (int i = 0; i < np; i++) {
+        int pos;
+
+        // Check if the page is already in the frame
+        if (!searchLRU(pages[i], frame, nf)) {
+            // If frame has empty spots initially, fill it
+            if (i < nf) {
+                pos = i;
+            } else {
+                // Find the position of the least recently used page
+                pos = findLRU(time, nf);
+            }
+            // Insert the new page into the frame
+            frame[pos] = pages[i];
+            pageFaults++;
+        } else {
+            // Page is already in frame, no page fault
+            for (int j = 0; j < nf; j++) {
+                if (frame[j] == pages[i]) {
+                    pos = j;
+                    break;
+                }
+            }
+        }
+        
+        // Update the last used time for the page
+        time[pos] = i;
+
+        // Display frame status after each page insertion
+        printf("Frame status (LRU): ");
+        for (int j = 0; j < nf; j++) {
+            if (frame[j] != -1)
+                printf("%d ", frame[j]);
+            else
+                printf("- ");
+        }
+        printf("\n");
+    }
+
+    printf("Total Page Faults (LRU): %d\n", pageFaults);
+}
+
+int main() {
+    int np, nf;
+    
+    printf("Enter the number of pages: ");
+    scanf("%d", &np);
+    int pages[np];
+    
+    printf("Enter the reference string: ");
+    for (int i = 0; i < np; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    printf("Enter the number of frames: ");
+    scanf("%d", &nf);
+
+    printf("\nRunning LRU Page Replacement:\n");
+    LRU(pages, np, nf);
+
+    return 0;
+}

@@ -1,0 +1,93 @@
+import java.io.*;
+
+public class Main {
+    public static char[] IR = new char[4];  
+    public static char[] R = new char[4];  
+    public static int IC;  
+    public static int SI; 
+    public static boolean C;  
+    public static char[][] M = new char[100][4];  
+    public static BufferedReader input;
+    public static FileWriter output;
+
+    public static void main(String[] args) {
+        try {
+            input = new BufferedReader(new FileReader("input.txt"));
+            output = new FileWriter("output.txt");
+            LOAD();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (input != null) input.close();
+                if (output != null) output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void INIT() {
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 4; j++) {
+                M[i][j] = ' ';
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            IR[i] = ' ';
+            R[i] = ' ';
+        }
+    }
+
+
+
+    
+  
+    private static void LOAD() throws IOException {
+        String buffer;
+        int m = 0;
+        while ((buffer = input.readLine()) != null) {
+            if (buffer.length() < 4) {
+                continue;
+            }
+            String line = buffer.substring(0, Math.min(4, buffer.length()));
+            if (line.equals("$AMJ")) {
+                m = 0;
+                INIT();
+            } 
+            else if (line.equals("$DTA")) 
+            {
+            } 
+            else if (line.equals("$END")) 
+            {
+                PRINTMEMORY();
+            } else {
+                if (m >= 100) {
+                    System.out.println("Out of memory.");
+                    break;
+                }
+                int k = 0;
+                for (int i = m; i < m + 10 && i < 100 && k < buffer.length(); i++) {
+                    for (int j = 0; j < 4 && k < buffer.length(); j++) {
+                        M[i][j] = buffer.charAt(k++);
+                    }
+                }
+                m += 10;
+            }
+        }
+    }
+
+    private static void PRINTMEMORY() {
+        System.out.println("        MEMORY\n");
+        for (int i = 0; i < 100; ++i) {
+            System.out.print("Mem Loc [" + i + "] : ");
+            for (int j = 0; j < 4; j++) {
+                System.out.print(M[i][j]+" ");
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("\n");
+    }
+}

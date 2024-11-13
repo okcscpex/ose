@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+pthread_mutex_t mutex;
+pthread_mutex_t rw_mutex;
+int reader_count = 0;
+int reader_num = 1; 
+int writer_num = 1; 
+
+void* reader(void* arg) {
+    pthread_mutex_lock(&mutex);
+    int r_num = reader_num++;
+    pthread_mutex_unlock(&mutex);
+
+    pthread_mutex_lock(&mutex);
+    reader_count++;
+    if (reader_count == 1) {
+        pthread_mutex_lock(&rw_mutex); 
+    }
+    pthread_mutex_unlock(&mutex);
+
+    printf("Reader %d entered the critical section.\n", r_num);
+    sleep(1); 
+    printf("Reader %d left the critical section.\n", r_num);
+
+    pthread_mutex_lock(&mutex);
+    reader_count--;
+    if (reader_count == 0) {
+        pthread_mutex_unlock(&rw_mutex); 
+    }
+    pthread_mutex_unlock(&mutex);
+
+    return NULL;
+}
+
+void* writer(void* arg) {
+    pthread_mutex_lock(&mutex);
+    int w_num = writer_num++;
+    pthread_mutex_unlock(&mutex);
+
+    pthread_mutex_lock(&rw_mutex);
+
+    printf("Writer %d entered the critical section.\n", w_num);
+    sleep(1); 
+    printf("Writer %d left the critical section.\n", w_num);
+
+    pthread_mutex_unlock(&rw_mutex);
+
+    return NULL;
+}
+
+int main() {
+    int readers, writers;
+    printf("Enter number of readers: ");
+    scanf("%d", &readers);
+    printf("Enter number of writers: ");
+    scanf("%d", &writers);
+
+    pthread_t r_threads[readers], w_threads[writers];
+
+    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&rw_mutex, NULL);
+
+    for (int i = 0; i < readers; i++) {
+        pthread_create(&r_threads[i], NULL, reader, NULL);
+    }
+
+    for (int i = 0; i < writers; i++) {
+        pthread_create(&w_threads[i], NULL, writer, NULL);
+    }
+
+    for (int i = 0; i < readers; i++) {
+        pthread_join(r_threads[i], NULL);
+    }
+
+    for (int i = 0; i < writers; i++) {
+        pthread_join(w_threads[i], NULL);
+    }
+
+    pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&rw_mutex);
+
+    return 0;
+}
+
+

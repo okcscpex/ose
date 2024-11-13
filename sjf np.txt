@@ -1,0 +1,84 @@
+) #include <stdio.h>
+
+struct Process {
+    int pid;
+    int burst;
+    int arrival;
+    int remaining;  
+    int finish;
+    int tat;      
+    int wait;       
+};
+
+void findTimes(struct Process p[], int n) {
+    int currentTime = 0, completed = 0, minIdx;
+    int isCompleted[n]; 
+    for (int i = 0; i < n; i++) {
+        isCompleted[i] = 0;
+        p[i].remaining = p[i].burst; 
+    }
+
+    while (completed < n) {
+        int minBurst = 99999;
+        minIdx = -1;
+
+        
+        for (int i = 0; i < n; i++) {
+            if (p[i].arrival <= currentTime && !isCompleted[i] && p[i].remaining < minBurst) {
+                minBurst = p[i].remaining;
+                minIdx = i;
+            }
+        }
+
+        if (minIdx != -1) {
+            currentTime++;
+            p[minIdx].remaining--;
+
+            if (p[minIdx].remaining == 0) {
+                p[minIdx].finish = currentTime;
+                p[minIdx].tat = p[minIdx].finish - p[minIdx].arrival;
+                p[minIdx].wait = p[minIdx].tat - p[minIdx].burst;
+                isCompleted[minIdx] = 1;
+                completed++;
+            }
+        } else {
+            currentTime++;
+        }
+    }
+}
+
+void printGanttChart(struct Process p[], int n) {
+    printf("\nGantt Chart is not precise for preemptive scheduling as pro-cesses are interrupted multiple times.\n");
+}
+
+int main() {
+    int n;
+
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    struct Process p[n];
+
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        printf("Enter arrival time and burst time for process P%d: ", p[i].pid);
+        scanf("%d %d", &p[i].arrival, &p[i].burst);
+    }
+
+    findTimes(p, n);
+
+    printf("\nProcess\tArrival\tBurst\tFinish\tTurnaround\tWaiting\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\t\t%d\n", p[i].pid, p[i].arrival, p[i].burst, p[i].finish, p[i].tat, p[i].wait);
+    }
+
+    
+    printGanttChart(p, n);
+
+    return 0;
+}
+
+
+
+4) Priority Non-Preemptive
+#include <stdio

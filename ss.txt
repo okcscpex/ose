@@ -1,0 +1,118 @@
+if [ -z "$1" ]; then
+    echo "Please provide a number as an argument."
+    exit 1
+fi
+number=$1
+sum=0
+while [ $number -gt 0 ]; do
+    digit=$(( number % 10 ))
+    sum=$(( sum + digit ))
+    number=$(( number / 10 ))
+done
+echo "Sum of digits: $sum"
+
+
+
+
+
+
+average() {
+    sum=0
+    count=$#
+    for num in "$@"; do
+        sum=$(( sum + num ))
+    done
+    echo "Average: $(( sum / count ))"
+}
+max_digit() {
+    number=$1
+    max=0
+    while [ $number -gt 0 ]; do
+        digit=$(( number % 10 ))
+        if [ $digit -gt $max ]; then
+            max=$digit
+        fi
+        number=$(( number / 10 ))
+    done
+    echo "Max digit: $max"
+}
+min_digit() {
+    number=$1
+    min=9
+    while [ $number -gt 0 ]; do
+        digit=$(( number % 10 ))
+        if [ $digit -lt $min ]; then
+            min=$digit
+        fi
+        number=$(( number / 10 ))
+    done
+    echo "Min digit: $min"
+}
+echo "Enter numbers for average calculation (space-separated):"
+read -a nums
+average "${nums[@]}"
+echo "Enter a number to find max and min digits:"
+read num
+max_digit "$num"
+min_digit "$num"
+
+
+
+
+
+
+factorial() {
+    if [ $1 -le 1 ]; then
+        echo 1
+    else
+        prev=$(factorial $(( $1 - 1 )))
+        echo $(( $1 * prev ))
+    fi
+}
+
+echo "Enter a number to find its factorial:"
+read num
+result=$(factorial $num)
+echo "Factorial of $num (with recursion): $result"
+
+
+
+
+echo "Enter a string:"
+read str
+length=${#str}
+is_palindrome=1
+for (( i=0; i<length/2; i++ )); do
+    if [ "${str:i:1}" != "${str:length-i-1:1}" ]; then
+        is_palindrome=0
+        break
+    fi
+done
+if [ $is_palindrome -eq 1 ]; then
+    echo "The string is a palindrome."
+else
+    echo "The string is not a palindrome."
+fi
+
+
+
+
+
+echo "Enter elements of the array (space-separated):"
+read -a arr
+n=${#arr[@]}
+
+for ((i = 0; i < n-1; i++)); do
+    for ((j = 0; j < n-i-1; j++)); do
+        if [ "${arr[j]}" -gt "${arr[j+1]}" ]; then
+            # Swap
+            temp=${arr[j]}
+            arr[j]=${arr[j+1]}
+            arr[j+1]=$temp
+        fi
+    done
+done
+
+echo "Sorted Array: ${arr[@]}"
+
+
