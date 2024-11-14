@@ -1,0 +1,16 @@
+
+source_file="input.txt"
+destination_file="output_char_by_char.txt"
+
+> "$destination_file"
+
+total_chars=$(wc -c < "$source_file")
+
+for (( i=1; i<=$total_chars; i++ )); do
+    # Get one character at a time
+    char=$(head -c $i "$source_file" | tail -c 1)
+    # Write character to destination file
+    echo -n "$char" >> "$destination_file"
+done
+
+echo "File copied character by character using head and tail to $destination_file"
